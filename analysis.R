@@ -48,3 +48,18 @@ corpus <- c(blog, news, twitter) %>%
         tm_map(stripWhitespace)
 
 rm(list = c("blog", "news", "twitter", "textSample", "readdata"))
+
+# Create term document matrix
+tdm <- TermDocumentMatrix(corpus)
+m <- rowSums(as.matrix(tdm))
+
+# sum the rows and sort by frequency
+term_freq <- rowSums(tdm) %>% sort(decreasing = TRUE)
+
+# Plot frequent terms using qdap package
+library(qdap)
+freq <- freq_terms(corpus,
+                   top = 10,
+                   at.least = 3,
+                   stopwords = "Top200Words")
+plot(freq)
