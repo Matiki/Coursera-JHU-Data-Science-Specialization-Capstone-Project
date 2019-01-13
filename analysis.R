@@ -1,8 +1,10 @@
+# Load necessary packages into current R session
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(tm)
 library(stringi)
+library(tidytext)
 
 # Download Data Files
 if (!file.exists("Coursera-SwiftKey.zip")){
@@ -21,9 +23,12 @@ if(!file.exists("./final")){
 
 # Create function to read the data
 readdata <- function(x){
-        readLines(paste("./final/en_US/", x, sep = ""),
-                  encoding = "UTF-8",
-                  skipNul = TRUE)
+        con <- file(paste("./final/en_US/", x, sep = ""), "r")
+        temp <- readLines(con,
+                          encoding = "UTF-8",
+                          skipNul = TRUE)
+        close(con)
+        return(temp)
 }
 
 # Create function to sample the data
@@ -45,21 +50,23 @@ corpus <- c(blog, news, twitter) %>%
         tm_map(content_transformer(tolower)) %>%
         tm_map(removePunctuation) %>%
         tm_map(removeNumbers) %>%
-        tm_map(stripWhitespace)
+        tm_map(stripWhitespace) %>%
+        tm_map(removeWords, stopwords("en"))
 
 rm(list = c("blog", "news", "twitter", "textSample", "readdata"))
 
 # Create term document matrix
-tdm <- TermDocumentMatrix(corpus)
-m <- rowSums(as.matrix(tdm))
+tdm <- corpus %>% 
+        TermDocumentMatrix() %>%
+        removeSparseTerms(0.9999)
 
-# sum the rows and sort by frequency
-term_freq <- rowSums(tdm) %>% sort(decreasing = TRUE)
+# Create term frequncy data frame
+term_freq <- tidy(tdm) %>%
+        group_by(term) %>%
+        summarise(frequency = sum(count)) %>%
+        arrange(desc(frequency))
 
-# Plot frequent terms using qdap package
-library(qdap)
-freq <- freq_terms(corpus,
-                   top = 10,
-                   at.least = 3,
-                   stopwords = "Top200Words")
-plot(freq)
+# Plot most frequent terms 
+ggplot(data = term_freq[1:10,],
+       aes(x = term, y = frequency)) +
+        geom_bar(stat = "identity")
