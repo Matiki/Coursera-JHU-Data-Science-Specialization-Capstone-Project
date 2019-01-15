@@ -5,6 +5,7 @@ library(ggplot2)
 library(tm)
 library(stringi)
 library(tidytext)
+library(RWeka)
 
 # Download Data Files
 if (!file.exists("Coursera-SwiftKey.zip")){
@@ -70,3 +71,46 @@ term_freq <- tidy(tdm) %>%
 ggplot(data = term_freq[1:10,],
        aes(x = term, y = frequency)) +
         geom_bar(stat = "identity")
+
+# Define bigram & trigram tokenizer functions
+bigram <- function(x){
+        NGramTokenizer(x, Weka_control(min = 2, max = 2))
+}
+
+trigram <- function(x){
+        NGramTokenizer(x, Weka_control(min = 3, max = 3))
+}
+
+# Make bigram & trigram tdm
+bigram_tdm <- TermDocumentMatrix(corpus, 
+                                 control = list(tokenize = bigram))
+
+trigram_tdm <- TermDocumentMatrix(corpus, 
+                                  control = list(tokenize = trigram))
+
+# Create term frequency data frames for uni, bi, and tri-grams
+gram_freq <- function(tdm){
+        tidy(tdm) %>%
+                group_by(term) %>%
+                summarize(frequency = sum(count)) %>%
+                arrange(desc(frequency))
+}
+
+unigram_tf <- gram_freq(tdm)
+bigram_tf <- gram_freq(bigram_tdm)
+trigram_tf <- gram_freq(trigram_tdm)
+
+# Plot most common terms
+myplot <- function(data, xlabel = ""){
+        ggplot(data = data[1:10,],
+               aes(x = reorder(term, -frequency), 
+                   y = frequency)) +
+                geom_bar(stat = "identity") +
+                labs(x = xlabel,
+                     y = "Frequency") +
+                theme(axis.text.x = element_text(angle = 45, hjust = 1))
+}
+
+myplot(unigram_tf, "Unigram")
+myplot(bigram_tf, "Bigram")
+myplot(trigram_tf, "Trigram")
