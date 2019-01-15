@@ -61,17 +61,6 @@ tdm <- corpus %>%
         TermDocumentMatrix() %>%
         removeSparseTerms(0.9999)
 
-# Create term frequncy data frame
-term_freq <- tidy(tdm) %>%
-        group_by(term) %>%
-        summarise(frequency = sum(count)) %>%
-        arrange(desc(frequency))
-
-# Plot most frequent terms 
-ggplot(data = term_freq[1:10,],
-       aes(x = term, y = frequency)) +
-        geom_bar(stat = "identity")
-
 # Define bigram & trigram tokenizer functions
 bigram <- function(x){
         NGramTokenizer(x, Weka_control(min = 2, max = 2))
