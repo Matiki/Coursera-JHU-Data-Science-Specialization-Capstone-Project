@@ -1,6 +1,5 @@
 # Load necessary packages into current R session
 library(dplyr)
-library(tidyr)
 library(ggplot2)
 library(tm)
 library(stringi)
@@ -37,12 +36,27 @@ textSample <- function(temp){
         sample(temp, length(temp) * .01)
 }
 
-# Use functions to read and sample the data
+# Read the data from the three files
+blog <- readdata("en_US.blogs.txt")
+news <- readdata("en_US.news.txt")
+twitter <- readdata("en_US.twitter.txt")
+
+# Summarize the three files
+file_summary <- data.frame(File = c("blog", "news", "twitter"),
+                           lines = c(length(blog), length(news), length(twitter)),
+                           mean_num_words = c(mean(stri_count_words(blog)),
+                                              mean(stri_count_words(news)),
+                                              mean(stri_count_words(twitter))),
+                           total_num_words = c(sum(stri_count_words(blog)),
+                                               sum(stri_count_words(news)),
+                                               sum(stri_count_words(twitter))))
+
+# Use function to sample the data
 set.seed(12345)
 
-blog <- readdata("en_US.blogs.txt") %>% textSample()
-news <- readdata("en_US.news.txt") %>% textSample()
-twitter <- readdata("en_US.twitter.txt") %>% textSample()
+blog <- textSample(blog)
+news <- textSample(news)
+twitter <- textSample(twitter)
 
 # Create a corpus and clean it up
 corpus <- c(blog, news, twitter) %>% 
@@ -54,7 +68,7 @@ corpus <- c(blog, news, twitter) %>%
         tm_map(stripWhitespace) %>%
         tm_map(removeWords, stopwords("en"))
 
-rm(list = c("blog", "news", "twitter", "textSample", "readdata"))
+rm(list = c("blog", "news", "twitter", "textSample", "readdata", "file_summary"))
 
 # Create term document matrix
 tdm <- corpus %>% 
@@ -72,10 +86,12 @@ trigram <- function(x){
 
 # Make bigram & trigram tdm
 bigram_tdm <- TermDocumentMatrix(corpus, 
-                                 control = list(tokenize = bigram))
+                                 control = list(tokenize = bigram)) %>%
+        removeSparseTerms(0.9999)
 
 trigram_tdm <- TermDocumentMatrix(corpus, 
-                                  control = list(tokenize = trigram))
+                                  control = list(tokenize = trigram)) %>%
+        removeSparseTerms(0.9999)
 
 # Create term frequency data frames for uni, bi, and tri-grams
 gram_freq <- function(tdm){
@@ -103,3 +119,5 @@ myplot <- function(data, xlabel = ""){
 myplot(unigram_tf, "Unigram")
 myplot(bigram_tf, "Bigram")
 myplot(trigram_tf, "Trigram")
+
+rm(list = ls())
