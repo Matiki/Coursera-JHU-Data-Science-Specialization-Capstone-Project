@@ -70,40 +70,35 @@ corpus <- c(blog, news, twitter) %>%
 
 rm(list = c("blog", "news", "twitter", "textSample", "readdata", "file_summary"))
 
-# Create term document matrix
-tdm <- corpus %>% 
-        TermDocumentMatrix() %>%
-        removeSparseTerms(0.9999)
-
-# Define bigram & trigram tokenizer functions
-bigram <- function(x){
-        NGramTokenizer(x, Weka_control(min = 2, max = 2))
-}
-
-trigram <- function(x){
-        NGramTokenizer(x, Weka_control(min = 3, max = 3))
-}
-
-# Make bigram & trigram tdm
-bigram_tdm <- TermDocumentMatrix(corpus, 
-                                 control = list(tokenize = bigram)) %>%
-        removeSparseTerms(0.9999)
-
-trigram_tdm <- TermDocumentMatrix(corpus, 
-                                  control = list(tokenize = trigram)) %>%
-        removeSparseTerms(0.9999)
-
-# Create term frequency data frames for uni, bi, and tri-grams
-gram_freq <- function(tdm){
-        tidy(tdm) %>%
+# Create function to make N-gram dataframe 
+get_freq <- function(corpus, ngramcount){
+        token <- function(x){
+                NGramTokenizer(x,
+                               Weka_control(min = ngramcount,
+                                            max = ngramcount))
+        }
+        TermDocumentMatrix(corpus, 
+                           control = list(tokenize = token)) %>%
+                removeSparseTerms(0.9999) %>%
+                tidy() %>%
                 group_by(term) %>%
                 summarize(frequency = sum(count)) %>%
                 arrange(desc(frequency))
 }
 
-unigram_tf <- gram_freq(tdm)
-bigram_tf <- gram_freq(bigram_tdm)
-trigram_tf <- gram_freq(trigram_tdm)
+# Make n-gram dataframes with list of most frequent terms
+unigram <- get_freq(corpus, 1)
+bigram <- get_freq(corpus, 2)
+trigram <- get_freq(corpus, 3)
+
+# Save files for later use
+if(!dir.exists("finaldata")){
+        dir.create("finaldata")
+}else{
+        saveRDS(unigram, "finaldata/unigram.RData")
+        saveRDS(bigram, "finaldata/bigram.RData")
+        saveRDS(trigram, "finaldata/trigram.RData")
+}
 
 # Plot most common terms
 myplot <- function(data, xlabel = ""){
@@ -116,8 +111,8 @@ myplot <- function(data, xlabel = ""){
                 theme(axis.text.x = element_text(angle = 45, hjust = 1))
 }
 
-myplot(unigram_tf, "Unigram")
-myplot(bigram_tf, "Bigram")
-myplot(trigram_tf, "Trigram")
+myplot(unigram, "Unigram")
+myplot(bigram, "Bigram")
+myplot(trigram, "Trigram")
 
 rm(list = ls())
