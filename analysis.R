@@ -217,35 +217,35 @@ nextword <- function(input){
                         cleaninput <- paste(text, collapse = " ")
                 }
         }
-        return(prediction)
+        return(as.character(prediction))
 }
 
 # Prediction functions
 hexpred <- function(text){
         hexgram[hexgram$first == text[1] &
-                        hexgram$second == text[2] &
-                        hexgram$third == text[3] &
-                        hexgram$fourth == text[4] &
-                        hexgram$fifth == text[5],8][1,1]
+                hexgram$second == text[2] &
+                hexgram$third == text[3] &
+                hexgram$fourth == text[4] &
+                hexgram$fifth == text[5],8][1,1]
 }
 
 pentpred <- function(text){
         pentgram[pentgram$first == text[1] &
-                         pentgram$second == text[2] &
-                         pentgram$third == text[3] &
-                         pentgram$fourth == text[4],7][1,1]
+                 pentgram$second == text[2] &
+                 pentgram$third == text[3] &
+                 pentgram$fourth == text[4],7][1,1]
 }
 
 
 quadpred <- function(text){
         quadgram[quadgram$first == text[1] &
-                         quadgram$second == text[2] &
-                         quadgram$third == text[3],6][1,1]
+                 quadgram$second == text[2] &
+                 quadgram$third == text[3],6][1,1]
 }
 
 tripred <- function(text){
         trigram[trigram$first == text[1] &
-                        trigram$second == text[2],5][1,1]
+                trigram$second == text[2],5][1,1]
 }
 
 bipred <- function(text){
