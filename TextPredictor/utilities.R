@@ -1,7 +1,7 @@
 # Load necessary packages
-#library(dplyr)
-#library(tm)
-#library(stylo)
+library(dplyr)
+library(tm)
+library(stylo)
 
 # Function for cleaning text input
 cleantext <- function(text){
@@ -74,8 +74,8 @@ nextword <- function(input){
         return(as.character(prediction))
 }
 # Read in necessary data files
-#bigram <- readRDS("finaldata/bigram.RData")
-#trigram <- readRDS("finaldata/trigram.RData")
-#quadgram <- readRDS("finaldata/quadgram.RData")
-#pentgram <- readRDS("finaldata/pentgram.RData")
-#hexgram <- readRDS("finaldata/hexgram.RData")
+bigram <- readRDS("finaldata/bigram.RData")
+trigram <- readRDS("finaldata/trigram.RData")
+quadgram <- readRDS("finaldata/quadgram.RData")
+pentgram <- readRDS("finaldata/pentgram.RData")
+hexgram <- readRDS("finaldata/hexgram.RData")
