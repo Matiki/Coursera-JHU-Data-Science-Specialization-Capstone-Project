@@ -2,11 +2,13 @@
 title: "Text Prediction Algorithm"
 author: "Matiki"
 date: "January 24, 2019"
-output: ioslides_presentation
+output:
+  ioslides_presentation: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+library(imager)
 ```
 
 ## Coursera Data Science Capstone Project
@@ -33,15 +35,22 @@ The algorithm works by taking up to the last five words given as input, and
 searching for a match in the 6-gram data frame. If it finds a match, it prints 
 out the 6th word. If no match is found, the app looks at only the last four words
 given, and searches in the 5-gram data frame. The app continues like this until a 
-match is found.
+match is found. If no match can be found, it prints out an error message.
 
 ## Example
 
-```{r }
+Here's an example of the app correctly predicting the next word:
 
+```{r }
+myimg <- load.image("textPredictorExample.png")
+plot(myimg, axes = FALSE)
 ```
 
 ## Links:
+
+* The app can be found and tested [here](https://matiki.shinyapps.io/TextPredictor/)
+* A github repository with all the code and data files necessary to complete the 
+project can be found [here](https://github.com/Matiki/Coursera-JHU-Data-Science-Specialization-Capstone-Project)
 
 ```{r }
 ```
