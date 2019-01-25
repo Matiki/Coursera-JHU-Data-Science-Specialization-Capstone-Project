@@ -1,0 +1,48 @@
+---
+title: "Text Prediction Algorithm"
+author: "Matiki"
+date: "January 24, 2019"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Coursera Data Science Capstone Project
+
+The final project of the Data Science Specialization on Coursera.org involves 
+creating a shiny web application that takes a small amount of text as input,
+and predicts the next word as output. The function is similar to many text 
+messaging apps found on modern smart phones.
+
+Text mining, natural language processing, data wrangling, and all analyses and 
+model building were completed using common R packages.
+
+## How it works:
+
+The app was written on a home computer running Windows with an Intel i3 processor 
+and 2 Gb of RAM, so a small random sampling of the data was used in order to be
+able to run properly. 
+
+The data sample was 'tokenized' into N-grams, or sequences of N words found in a
+given text corpus, and aggregated into frequency data frames, through which the 
+algorithm searches for terms like a dictionary. N-grams up to 6 were used.
+
+The algorithm works by taking up to the last five words given as input, and 
+searching for a match in the 6-gram data frame. If it finds a match, it prints 
+out the 6th word. If no match is found, the app looks at only the last four words
+given, and searches in the 5-gram data frame. The app continues like this until a 
+match is found.
+
+## Example
+
+```{r }
+
+```
+
+## Links:
+
+```{r }
+```
+
